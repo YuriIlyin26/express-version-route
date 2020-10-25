@@ -12,6 +12,18 @@ class versionRouter {
         }
       }
 
+      if(options.useMaxVersion) {
+        const maxVersion = semver.maxSatisfying(versionArray, req.version)
+        if (maxVersion) {
+          for (let [versionKey, versionRouter] of versionsMap) {
+            versionArray.push(versionKey)
+            if (this.checkVersionMatch(maxVersion, versionKey)) {
+              return versionRouter(req, res, next)
+            }
+          }
+        }
+      }
+
       const defaultRoute = this.getDefaultRoute(versionsMap)
       if (defaultRoute) {
         return defaultRoute(req, res, next)
